@@ -3,9 +3,11 @@ var http = require('http')
 var qs = require('qs')
 var tmpl = require('tmpl')
 var parseString = require('xml2js').parseString
-
-
 var TOKEN = 'quay'
+
+var getUserInfo = require('./lib/user').getUserInfo;
+var replyText = require('./lib/reply').replyText;
+var wss = require('./lib/ws.js').wss;
 
 function checkSignature(params,token){
 	var key = [token,params.timestamp,params.nonce].sort().join('')
@@ -40,34 +42,6 @@ function replyText(msg, replyText){
 	})
 }
 
-function replyLocation(msg, x,y,label,scale){
-	// if (msg.xml.MsgType[0] !== 'location') {
-	// 	return ''
-	// }
-	//console.log(msg)
-
-	var replyTmpl = '<xml>' +
-    '<ToUserName><![CDATA[{toUser}]]></ToUserName>' +
-    '<FromUserName><![CDATA[{fromUser}]]></FromUserName>' +
-    '<CreateTime>{time}</CreateTime>' +
-    '<MsgType><![CDATA[{type}]]></MsgType>' +
-		'<Scale>16</Scale>'+
-		'<Location_X>22.575359</Location_X>'+
-		'<Location_Y>113.946121</Location_Y>'+
-    '<Label><![CDATA[{label}]]></Label>' +
-    '</xml>'
-
-	return tmpl(replyTmpl,{
-		toUser: msg.xml.FromUserName[0],
-		fromUser: msg.xml.ToUserName[0],
-		type: 'location',
-		time: Date.now(),
-		locationX: x,
-		locationY: y,
-		scale: scale,
-		label: label
-	})
-}
 
 var server = http.createServer(function(request,response){
 	var query = require('url').parse(request.url).query
@@ -93,11 +67,19 @@ var server = http.createServer(function(request,response){
 			console.log(postdata)
 			parseString(postdata,function(err,result){
 				if(!err){
-					var res = replyText(result,'消息推送成功！')
-					// var res = replyLocation(result,21,110,'位置信息推送成功',16)
-					// console.log( res )
-					response.end(res)
+					if(result.xml.MsgType[0] === 'text'){
+						getUserInfo(result.xml.FromUserName[0])
+						.then(function(userInfo){
+							//获得用户信息，合并到消息中
+							result.user = userInfo;
+							//将消息通过websocket广播
+							wss.broadcast(result);
+							var res = replyText(result, '消息推送成功！');
+							response.end(res);
+						})
+					}
 				}
+
 			})
 
 		})
