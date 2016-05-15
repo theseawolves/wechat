@@ -70,38 +70,42 @@ function replyLocation(msg, x,y,label,scale){
 }
 
 var server = http.createServer(function(request,response){
-	var query = require('url').parse(request.url).query
-	var params = qs.parse(query)
-
-	// console.log(params)
-	// console.log("token-->",TOKEN)
-
-	if(!checkSignature(params,TOKEN)){
-		response.end('signature fail')
-	}
-
-	if (request.method == 'GET') {
-		response.end(params.echostr)
-	} else {
-		var postdata = ""
-
-		request.addListener('data',function(postchunk){
-			postdata +=postchunk
-		})
-
-		request.addListener('end',function(){
-			console.log(postdata)
-			parseString(postdata,function(err,result){
-				if(!err){
-					var res = replyText(result,'消息推送成功！')
-					// var res = replyLocation(result,21,110,'位置信息推送成功',16)
-					// console.log( res )
-					response.end(res)
-				}
-			})
-
-		})
-	}
+	// var query = require('url').parse(request.url).query
+	// var params = qs.parse(query)
+	//
+	// // console.log(params)
+	// // console.log("token-->",TOKEN)
+	//
+	// if(!checkSignature(params,TOKEN)){
+	// 	response.end('signature fail')
+	// }
+	//
+	// if (request.method == 'GET') {
+	// 	response.end(params.echostr)
+	// } else {
+	// 	var postdata = ""
+	//
+	// 	request.addListener('data',function(postchunk){
+	// 		postdata +=postchunk
+	// 	})
+	//
+	// 	request.addListener('end',function(){
+	// 		console.log(postdata)
+	// 		parseString(postdata,function(err,result){
+	// 			if(!err){
+	// 				var res = replyText(result,'消息推送成功！')
+	// 				// var res = replyLocation(result,21,110,'位置信息推送成功',16)
+	// 				// console.log( res )
+	// 				response.end(res)
+	// 			}
+	// 		})
+	//
+	// 	})
+	// }
+	//
+	request.addListener('end',function(){
+		response.end('success')
+	})
 
 
 
