@@ -9,6 +9,7 @@
   "author": "theseawolves",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.13.4",
     "http": "0.0.0",
     "qs": "^6.2.0",
     "tmpl": "^1.0.4",
