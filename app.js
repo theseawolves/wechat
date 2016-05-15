@@ -7,7 +7,7 @@ var TOKEN = 'quay'
 
 var getUserInfo = require('./lib/user').getUserInfo;
 var replyText = require('./lib/reply').replyText;
-var wss = require('./lib/ws.js').wss;
+//var wss = require('./lib/ws.js').wss;
 
 function checkSignature(params,token){
 	var key = [token,params.timestamp,params.nonce].sort().join('')
@@ -73,7 +73,7 @@ var server = http.createServer(function(request,response){
 							//获得用户信息，合并到消息中
 							result.user = userInfo;
 							//将消息通过websocket广播
-							wss.broadcast(result);
+							//wss.broadcast(result);
 							var res = replyText(result, '消息推送成功！');
 							response.end(res);
 						})
