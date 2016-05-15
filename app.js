@@ -1,4 +1,4 @@
-var PORT = process.env.PORT || 5000
+var PORT = process.env.PORT || 3000
 var http = require('http')
 var qs = require('qs')
 var tmpl = require('tmpl')
