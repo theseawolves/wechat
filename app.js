@@ -65,18 +65,30 @@ var server = http.createServer(function(request,response){
 
 		request.addListener('end',function(){
 			console.log(postdata)
+
+			// parseString(postdata,function(err,result){
+			// 	if(!err){
+			// 		if(result.xml.MsgType[0] === 'text'){
+			// 			getUserInfo(result.xml.FromUserName[0])
+			// 			.then(function(userInfo){
+			// 				//获得用户信息，合并到消息中
+			// 				result.user = userInfo;
+			// 				//将消息通过websocket广播
+			// 				//wss.broadcast(result);
+			// 				var res = replyText(result, '消息推送成功！');
+			// 				response.end(res);
+			// 			})
+			// 		}
+			// 	}
+			//
+			// })
+
 			parseString(postdata,function(err,result){
 				if(!err){
 					if(result.xml.MsgType[0] === 'text'){
-						getUserInfo(result.xml.FromUserName[0])
-						.then(function(userInfo){
-							//获得用户信息，合并到消息中
-							result.user = userInfo;
-							//将消息通过websocket广播
-							//wss.broadcast(result);
 							var res = replyText(result, '消息推送成功！');
 							response.end(res);
-						})
+
 					}
 				}
 
